@@ -1,8 +1,13 @@
 package co.turtlegames.engine.engine;
 
 import co.turtlegames.core.TurtleModule;
+import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
+import co.turtlegames.core.scoreboard.TurtleScoreboardManager;
+import co.turtlegames.engine.engine.scoreboard.EngineScoreboardView;
 import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.engine.state.IGameState;
+import co.turtlegames.engine.engine.state.inst.LobbyGameState;
+import co.turtlegames.engine.engine.state.inst.ResetGameState;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,11 +17,11 @@ import java.util.Map;
 public class GameManager extends TurtleModule {
 
     private GameState _currentState = GameState.RESET;
-    private Map<GameState, IGameState> _stateProviders = new HashMap<>();
+    private Map<GameState, IGameState> _stateHandlers = new HashMap<>();
 
-    public GameManager(JavaPlugin ply) {
+    public GameManager(JavaPlugin pluginInstance) {
 
-        super(ply,"Game Manager");
+        super(pluginInstance,"Game Manager");
 
     }
 
@@ -26,15 +31,21 @@ public class GameManager extends TurtleModule {
         Bukkit.getScheduler()
                 .scheduleSyncRepeatingTask(this.getPlugin(), this::doTick, 1, 1);
 
+        this.registerStateProvider(GameState.RESET, new ResetGameState(this));
+        this.registerStateProvider(GameState.LOBBY, new LobbyGameState(this));
+
+        this.getModule(TurtleScoreboardManager.class)
+                .updateScoreboardView(new EngineScoreboardView(this));
+
     }
 
     public void registerStateProvider(GameState state, IGameState provider) {
-        _stateProviders.put(state, provider);
+        _stateHandlers.put(state, provider);
     }
 
     public void doTick() {
 
-        IGameState gameState = _stateProviders.get(_currentState);
+        IGameState gameState = _stateHandlers.get(_currentState);
         gameState.doTick();
 
     }
@@ -43,9 +54,12 @@ public class GameManager extends TurtleModule {
 
         _currentState = gameState;
 
-        _stateProviders.get(gameState)
+        _stateHandlers.get(gameState)
                 .doInitialTick();
 
     }
 
+    public IGameState getStateHandle() {
+        return _stateHandlers.get(_currentState);
+    }
 }
