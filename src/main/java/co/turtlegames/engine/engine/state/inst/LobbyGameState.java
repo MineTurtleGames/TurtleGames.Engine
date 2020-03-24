@@ -11,8 +11,6 @@ import org.bukkit.ChatColor;
 public class LobbyGameState implements IGameState {
 
     private PreventionSet _preventionSet;
-
-    private ScoreboardTitleAnimation _titleAnimation;
     private static final int STATE_TICKS = 60 * 20;
 
     private GameManager _gameManager;
@@ -22,8 +20,6 @@ public class LobbyGameState implements IGameState {
     public LobbyGameState(GameManager gameManager) {
 
         _gameManager = gameManager;
-        _titleAnimation = new ScoreboardTitleAnimation();
-
         _preventionSet = new PreventionSet();
 
     }
@@ -50,7 +46,8 @@ public class LobbyGameState implements IGameState {
     @Override
     public void updatePlayerScoreboard(TurtlePlayerScoreboard scoreboard) {
 
-        scoreboard.setTitle(_titleAnimation.getValue());
+        scoreboard.setTitle(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Turtle"
+                + ChatColor.GREEN.toString() + ChatColor.BOLD + "Games");
 
         scoreboard.setLine(1, ChatColor.RED + ChatColor.BOLD.toString() + "Game");
         scoreboard.setLine(2, "Game name");
@@ -66,7 +63,7 @@ public class LobbyGameState implements IGameState {
         scoreboard.setLine(8, Bukkit.getOnlinePlayers().size() + "/" + "8");
 
         scoreboard.setLine(9, "");
-
+      
         scoreboard.setLine(15, ChatColor.GREEN + ChatColor.BOLD.toString() + "Game start in 15 seconds");
 
     }

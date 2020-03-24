@@ -21,9 +21,6 @@ public class TurtleEngine extends TurtlePlugin {
         core.registerModule(new GameManager(this));
         core.registerModule(new PreventionManager(this));
 
-        this.getCoreInstance().<VirtualWorldManager>getModule(VirtualWorldManager.class).initializeModule();
-        this.getCoreInstance().<GameManager>getModule(GameManager.class).initializeModule();
-
     }
 
 }

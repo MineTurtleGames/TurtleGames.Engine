@@ -2,6 +2,8 @@ package co.turtlegames.engine.engine;
 
 import co.turtlegames.core.TurtleModule;
 import co.turtlegames.core.scoreboard.TurtleScoreboardManager;
+import co.turtlegames.engine.engine.listeners.JoinListener;
+import co.turtlegames.engine.engine.listeners.LobbyEventListener;
 import co.turtlegames.engine.engine.prevention.PreventionManager;
 import co.turtlegames.engine.engine.scoreboard.EngineScoreboardView;
 import co.turtlegames.engine.engine.state.GameState;
@@ -28,18 +30,18 @@ public class GameManager extends TurtleModule {
     @Override
     public void initializeModule() {
 
+        System.out.println("hi");
+
         Bukkit.getScheduler()
                 .scheduleSyncRepeatingTask(this.getPlugin(), this::doTick, 1, 1);
 
         this.registerStateProvider(GameState.RESET, new ResetGameState(this));
         this.registerStateProvider(GameState.LOBBY, new LobbyGameState(this));
 
-        Bukkit.getScheduler().runTaskLater(getPlugin(), () -> {
-            this.getModule(TurtleScoreboardManager.class)
-                    .updateScoreboardView(new EngineScoreboardView(this));
-        }, 20L);
-
-        switchState(GameState.LOBBY);
+        this.registerListener(new JoinListener(this));
+        this.registerListener(new LobbyEventListener(this));
+        this.getModule(TurtleScoreboardManager.class)
+                .updateScoreboardView(new EngineScoreboardView(this));
 
     }
 
@@ -67,5 +69,9 @@ public class GameManager extends TurtleModule {
 
     public IGameState getStateHandle() {
         return _stateHandlers.get(_currentState);
+    }
+
+    public GameState getState() {
+        return _currentState;
     }
 }
