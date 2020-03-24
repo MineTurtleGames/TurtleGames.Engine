@@ -1,12 +1,16 @@
 package co.turtlegames.engine.engine.state;
 
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
+import co.turtlegames.engine.engine.prevention.PreventionSet;
 
 public interface IGameState {
 
-    public void doInitialTick();
-    public void doTick();
+    void doInitialTick();
+    void doTick();
 
-    public void updatePlayerScoreboard(TurtlePlayerScoreboard scoreboard);
+    void updatePlayerScoreboard(TurtlePlayerScoreboard scoreboard);
+
+    PreventionSet getPreventionSet();
+
 
 }

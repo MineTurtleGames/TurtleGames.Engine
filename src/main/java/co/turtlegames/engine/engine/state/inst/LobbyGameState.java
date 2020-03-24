@@ -2,11 +2,17 @@ package co.turtlegames.engine.engine.state.inst;
 
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
 import co.turtlegames.engine.engine.GameManager;
+import co.turtlegames.engine.engine.prevention.PreventionSet;
+import co.turtlegames.engine.engine.scoreboard.ScoreboardTitleAnimation;
 import co.turtlegames.engine.engine.state.IGameState;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 public class LobbyGameState implements IGameState {
 
+    private PreventionSet _preventionSet;
+
+    private ScoreboardTitleAnimation _titleAnimation;
     private static final int STATE_TICKS = 60 * 20;
 
     private GameManager _gameManager;
@@ -16,7 +22,15 @@ public class LobbyGameState implements IGameState {
     public LobbyGameState(GameManager gameManager) {
 
         _gameManager = gameManager;
+        _titleAnimation = new ScoreboardTitleAnimation();
 
+        _preventionSet = new PreventionSet();
+
+    }
+
+    @Override
+    public PreventionSet getPreventionSet() {
+        return _preventionSet;
     }
 
     @Override
@@ -27,6 +41,8 @@ public class LobbyGameState implements IGameState {
     @Override
     public void doTick() {
 
+        _titleAnimation.tick();
+
         _tickTimer--;
 
     }
@@ -34,15 +50,24 @@ public class LobbyGameState implements IGameState {
     @Override
     public void updatePlayerScoreboard(TurtlePlayerScoreboard scoreboard) {
 
-        /*scoreboard.setTitle(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Turtle" + ChatColor.GREEN + ChatColor.BOLD + "Games");
+        scoreboard.setTitle(_titleAnimation.getValue());
 
-        scoreboard.setLine(0, ChatColor.GREEN + ChatColor.BOLD.toString() + "Game");
-        scoreboard.setLine(1, "Game name");
+        scoreboard.setLine(1, ChatColor.RED + ChatColor.BOLD.toString() + "Game");
+        scoreboard.setLine(2, "Game name");
 
-        scoreboard.setLine(3, ChatColor.RED + ChatColor.BOLD.toString() + "Kit");
-        scoreboard.setLine(4, "Kit name");
+        scoreboard.setLine(3, "");
 
-        scoreboard.setLine(15, ChatColor.RED + ChatColor.BOLD.toString() + "The game will start");*/
+        scoreboard.setLine(4, ChatColor.GREEN + ChatColor.BOLD.toString() + "Kit");
+        scoreboard.setLine(5, "Kit name");
+
+        scoreboard.setLine(6, "");
+
+        scoreboard.setLine(7, ChatColor.BLUE + ChatColor.BOLD.toString() + "Players");
+        scoreboard.setLine(8, Bukkit.getOnlinePlayers().size() + "/" + "8");
+
+        scoreboard.setLine(9, "");
+
+        scoreboard.setLine(15, ChatColor.GREEN + ChatColor.BOLD.toString() + "Game start in 15 seconds");
 
     }
 
