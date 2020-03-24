@@ -2,10 +2,13 @@ package co.turtlegames.engine.engine.state.inst;
 
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
 import co.turtlegames.engine.engine.GameManager;
+import co.turtlegames.engine.engine.prevention.PreventionSet;
 import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.engine.state.IGameState;
 
 public class ResetGameState implements IGameState {
+
+    private PreventionSet _preventionSet;
 
     private GameManager _gameManager;
 
@@ -13,6 +16,13 @@ public class ResetGameState implements IGameState {
 
         _gameManager = gameManager;
 
+        _preventionSet = new PreventionSet();
+
+    }
+
+    @Override
+    public PreventionSet getPreventionSet() {
+        return _preventionSet;
     }
 
     @Override

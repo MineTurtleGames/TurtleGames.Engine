@@ -1,10 +1,10 @@
 package co.turtlegames.engine.engine;
 
 import co.turtlegames.core.TurtleModule;
-import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
 import co.turtlegames.core.scoreboard.TurtleScoreboardManager;
 import co.turtlegames.engine.engine.listeners.JoinListener;
 import co.turtlegames.engine.engine.listeners.LobbyEventListener;
+import co.turtlegames.engine.engine.prevention.PreventionManager;
 import co.turtlegames.engine.engine.scoreboard.EngineScoreboardView;
 import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.engine.state.IGameState;
@@ -59,6 +59,8 @@ public class GameManager extends TurtleModule {
     public void switchState(GameState gameState) {
 
         _currentState = gameState;
+
+        getModule(PreventionManager.class).setCurrentSet(_stateHandlers.get(gameState).getPreventionSet());
 
         _stateHandlers.get(gameState)
                 .doInitialTick();

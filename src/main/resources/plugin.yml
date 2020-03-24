@@ -1,0 +1,5 @@
+name: tEngine
+version: 1.0
+main: co.turtlegames.engine.TurtleEngine
+depend:
+  - tCore
