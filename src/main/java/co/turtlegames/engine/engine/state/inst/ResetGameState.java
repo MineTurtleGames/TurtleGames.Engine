@@ -25,7 +25,7 @@ public class ResetGameState implements IGameState {
 
     @Override
     public void updatePlayerScoreboard(TurtlePlayerScoreboard scoreboard) {
-        /*scoreboard.setLine(0, "Reset in progress");*/
+        scoreboard.setLine(0, "Reset in progress");
     }
 
 }

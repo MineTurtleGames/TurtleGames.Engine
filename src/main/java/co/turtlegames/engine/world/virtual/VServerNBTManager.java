@@ -69,9 +69,7 @@ public class VServerNBTManager implements IDataManager,IPlayerFileData {
     }
 
     @Override
-    public void save(EntityHuman entityHuman) {
-
-    }
+    public void save(EntityHuman entityHuman) {}
 
     @Override
     public NBTTagCompound load(EntityHuman entityHuman) {
