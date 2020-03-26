@@ -1,11 +1,13 @@
 package co.turtlegames.engine.world.virtual;
 
 import co.turtlegames.core.TurtleModule;
+import co.turtlegames.engine.world.generator.VoidGenerator;
 import net.minecraft.server.v1_8_R3.*;
 import net.minecraft.server.v1_8_R3.WorldType;
 import org.bukkit.*;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
@@ -39,6 +41,19 @@ public class VirtualWorldManager extends TurtleModule {
     }
 
     public World createVirtualWorld(WorldCreator creator) {
+        return this.createVirtualWorld(creator, null);
+    }
+
+    public World createVirtualWorld(String name, IChunkLoader chunkLoader) {
+
+        WorldCreator creator = new WorldCreator(name)
+                                    .generator(new VoidGenerator());
+
+        return this.createVirtualWorld(creator, chunkLoader);
+
+    }
+
+    public World createVirtualWorld(WorldCreator creator, IChunkLoader chunkLoader) {
 
         if(_virtualWorlds.containsKey(creator.name()))
             return _virtualWorlds.get(creator.name());
@@ -48,7 +63,7 @@ public class VirtualWorldManager extends TurtleModule {
         CraftServer craftServer = (CraftServer) Bukkit.getServer();
 
         ChunkGenerator generator = creator.generator();
-        IDataManager serverNBTManager = new VServerNBTManager(creator.name());
+        IDataManager serverNBTManager = new VServerNBTManager(creator.name(), chunkLoader);
 
         MinecraftServer minecraftServer = MinecraftServer.getServer();
 
@@ -86,7 +101,9 @@ public class VirtualWorldManager extends TurtleModule {
         CraftServer craftServer = ((CraftServer)Bukkit.getServer());
         MinecraftServer server = MinecraftServer.getServer();
 
-        server.worlds.remove(world);
+        WorldServer handle = ((CraftWorld)world).getHandle();
+
+        server.worlds.remove(handle);
         craftServer.getWorlds().remove(world);
 
         _virtualWorlds.remove(world.getName());

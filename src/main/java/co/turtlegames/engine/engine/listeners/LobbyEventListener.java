@@ -34,8 +34,9 @@ public class LobbyEventListener implements Listener {
         if(event.getAction() != Action.PHYSICAL)
             return;
 
-        if(_gameManager.getState() != GameState.LOBBY)
-            return;
+        if(_gameManager.getState() != GameState.LOBBY
+            && _gameManager.getState() != GameState.INACTIVE)
+                return;
 
         Block clickedBlock = event.getClickedBlock();
 
@@ -94,7 +95,6 @@ public class LobbyEventListener implements Listener {
             ply.setVelocity(velo);
             ply.getWorld().playSound(ply.getLocation(), Sound.BAT_TAKEOFF, 1, 1);
 
-            ply.sendMessage(Chat.main("Lobby", "Woosh!"));
 
         }
 

@@ -1,26 +1,20 @@
 package co.turtlegames.engine.engine.prevention;
 
 import co.turtlegames.core.TurtleModule;
+import co.turtlegames.engine.engine.GameManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PreventionManager extends TurtleModule {
 
-    private PreventionSet _currentSet;
-
     public PreventionManager(JavaPlugin plugin) {
         super(plugin, "Prevention Manager");
-
-        _currentSet = new PreventionSet();
-    }
-
-    public void setCurrentSet(PreventionSet set) {
-        _currentSet = set;
     }
 
     @Override
@@ -28,10 +22,22 @@ public class PreventionManager extends TurtleModule {
         registerListener(this);
     }
 
+    public PreventionSet getCurrentPreventionSet() {
+
+        GameManager gameManager = this.getModule(GameManager.class);
+        PreventionSet set = gameManager.getStateHandle().getPreventionSet();
+
+        if(set == null)
+            return new PreventionSet();
+
+        return set;
+
+    }
+
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
 
-        if (!_currentSet.isBlockPlaceAllowed())
+        if (!this.getCurrentPreventionSet().isBlockPlaceAllowed())
             event.setCancelled(true);
 
     }
@@ -39,26 +45,38 @@ public class PreventionManager extends TurtleModule {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 
-        if (!_currentSet.isBlockPlaceAllowed())
+        if (!this.getCurrentPreventionSet().isBlockPlaceAllowed())
             event.setCancelled(true);
+
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent event) {
+
+        PreventionSet currentSet = this.getCurrentPreventionSet();
+
+        if (!currentSet.isDamageEnabled()) {
+
+            event.setCancelled(true);
+            event.setDamage(0.0D);
+            return;
+
+        }
 
     }
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
 
-        if (!_currentSet.isDamageEnabled()) {
+        PreventionSet currentSet = this.getCurrentPreventionSet();
 
-            event.setCancelled(true);
-            event.setDamage(0.0D);
+        if (!currentSet.isDamageEnabled())
             return;
-
-        }
 
         Entity victim = event.getEntity();
         Entity damager = event.getDamager();
 
-        if (!_currentSet.isPvpEnabled() && victim.getType().equals(EntityType.PLAYER) && damager.getType().equals(EntityType.PLAYER)) {
+        if (!currentSet.isPvpEnabled() && victim.getType().equals(EntityType.PLAYER) && damager.getType().equals(EntityType.PLAYER)) {
 
             event.setCancelled(true);
             event.setDamage(0.0D);
@@ -66,7 +84,7 @@ public class PreventionManager extends TurtleModule {
 
         }
 
-        if (!_currentSet.isPveEnabled() && !victim.getType().equals(EntityType.PLAYER) && damager.getType().equals(EntityType.PLAYER)) {
+        if (!currentSet.isPveEnabled() && !victim.getType().equals(EntityType.PLAYER) && damager.getType().equals(EntityType.PLAYER)) {
 
             event.setCancelled(true);
             event.setDamage(0.0D);
@@ -74,7 +92,7 @@ public class PreventionManager extends TurtleModule {
 
         }
 
-        if (!_currentSet.isEvpEnabled() && victim.getType().equals(EntityType.PLAYER) && !damager.getType().equals(EntityType.PLAYER)) {
+        if (!currentSet.isEvpEnabled() && victim.getType().equals(EntityType.PLAYER) && !damager.getType().equals(EntityType.PLAYER)) {
 
             event.setCancelled(true);
             event.setDamage(0.0D);
@@ -82,5 +100,7 @@ public class PreventionManager extends TurtleModule {
         }
 
     }
+
+
 
 }

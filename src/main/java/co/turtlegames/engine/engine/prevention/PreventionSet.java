@@ -4,7 +4,9 @@ public class PreventionSet {
 
     private boolean _blockPlaceAllowed = false;
     private boolean _blockBreakAllowed = false;
+
     private boolean _damageEnabled = false;
+
     private boolean _pvpEnabled = false;
     private boolean _pveEnabled = false;
     private boolean _evpEnabled = false;

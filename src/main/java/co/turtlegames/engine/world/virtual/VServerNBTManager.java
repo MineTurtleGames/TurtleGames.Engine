@@ -7,9 +7,13 @@ import java.util.UUID;
 
 public class VServerNBTManager implements IDataManager,IPlayerFileData {
 
+    private IChunkLoader _chunkLoader = null;
     private UUID _uid = UUID.randomUUID();
 
-    public VServerNBTManager(String mapName) {
+    public VServerNBTManager(String mapName) {}
+
+    public VServerNBTManager(String mapName, IChunkLoader chunkLoader) {
+        _chunkLoader = chunkLoader;
     }
 
 
@@ -25,7 +29,7 @@ public class VServerNBTManager implements IDataManager,IPlayerFileData {
 
     @Override
     public IChunkLoader createChunkLoader(WorldProvider worldProvider) {
-        return null;
+        return _chunkLoader;
     }
 
     @Override

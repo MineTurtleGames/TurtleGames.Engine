@@ -1,10 +1,15 @@
 package co.turtlegames.engine.engine.state.inst;
 
+import co.turtlegames.core.common.Chat;
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
 import co.turtlegames.engine.engine.GameManager;
+import co.turtlegames.engine.engine.game.GamePlayer;
+import co.turtlegames.engine.engine.map.MapManager;
+import co.turtlegames.engine.engine.map.MapToken;
 import co.turtlegames.engine.engine.prevention.PreventionSet;
 import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.engine.state.IGameState;
+import org.bukkit.Bukkit;
 
 public class ResetGameState implements IGameState {
 
@@ -26,16 +31,30 @@ public class ResetGameState implements IGameState {
     }
 
     @Override
-    public void doInitialTick() {}
+    public void doInitialTick() {
 
-    @Override
-    public void doTick() {
+        MapManager mapManager = _gameManager.getModule(MapManager.class);
+        MapToken token = mapManager.selectNewMap(_gameManager.getGameType());
+
+        if(token == null) {
+
+            Bukkit.broadcastMessage(Chat.main("Map", "No suitable maps were found for the running game."));
+            _gameManager.switchState(GameState.INACTIVE);
+
+            return;
+
+        }
+
         _gameManager.switchState(GameState.LOBBY);
+
     }
 
     @Override
-    public void updatePlayerScoreboard(TurtlePlayerScoreboard scoreboard) {
-        scoreboard.setLine(0, "Reset in progress");
+    public void doTick() { }
+
+    @Override
+    public void updatePlayerScoreboard(GamePlayer gamePlayer, TurtlePlayerScoreboard scoreboard) {
+
     }
 
 }
