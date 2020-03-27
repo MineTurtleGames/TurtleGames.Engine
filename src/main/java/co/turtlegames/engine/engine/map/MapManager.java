@@ -1,12 +1,11 @@
 package co.turtlegames.engine.engine.map;
 
 import co.turtlegames.core.TurtleModule;
+import co.turtlegames.core.tworld.TurtleWorldFormat;
+import co.turtlegames.core.tworld.loader.TurtleWorldLoader;
 import co.turtlegames.engine.engine.game.GameType;
 import co.turtlegames.engine.engine.map.action.FetchAvailableGameMapsAction;
 import co.turtlegames.engine.world.generator.VoidGenerator;
-import co.turtlegames.engine.world.tworld.TurtleWorldFormat;
-import co.turtlegames.tworld.io.TurtleInputStream;
-import co.turtlegames.tworld.loader.TurtleWorldLoader;
 import co.turtlegames.engine.world.virtual.VirtualWorldManager;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
