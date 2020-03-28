@@ -1,7 +1,7 @@
 package co.turtlegames.engine.engine.map;
 
-import co.turtlegames.core.tworld.TurtleWorldFormat;
-import co.turtlegames.core.tworld.io.TurtleInputStream;
+import co.turtlegames.core.world.tworld.TurtleWorldFormat;
+import co.turtlegames.core.world.tworld.io.TurtleInputStream;
 import co.turtlegames.engine.engine.game.GameType;
 
 import java.io.File;

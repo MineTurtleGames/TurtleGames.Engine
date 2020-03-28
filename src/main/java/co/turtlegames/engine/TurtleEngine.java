@@ -5,7 +5,7 @@ import co.turtlegames.core.TurtlePlugin;
 import co.turtlegames.engine.engine.GameManager;
 import co.turtlegames.engine.engine.map.MapManager;
 import co.turtlegames.engine.engine.prevention.PreventionManager;
-import co.turtlegames.engine.world.virtual.VirtualWorldManager;
+import co.turtlegames.core.world.virtual.VirtualWorldManager;
 
 public class TurtleEngine extends TurtlePlugin {
 
