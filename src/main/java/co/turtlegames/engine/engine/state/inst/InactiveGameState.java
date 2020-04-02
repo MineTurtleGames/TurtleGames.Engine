@@ -7,13 +7,14 @@ import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
 import co.turtlegames.core.util.UtilString;
 import co.turtlegames.core.util.UtilXp;
 import co.turtlegames.engine.engine.GameManager;
-import co.turtlegames.engine.engine.game.GamePlayer;
+import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.prevention.PreventionSet;
-import co.turtlegames.engine.engine.state.IGameState;
+import co.turtlegames.engine.engine.state.AbstractStateProvider;
+import co.turtlegames.engine.util.TickRate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-public class InactiveGameState implements IGameState {
+public class InactiveGameState extends AbstractStateProvider {
 
     private PreventionSet _preventionSet;
     private GameManager _gameManager;
@@ -31,7 +32,7 @@ public class InactiveGameState implements IGameState {
     public void doInitialTick() {}
 
     @Override
-    public void doTick() {}
+    public void doTick(TickRate tickRate) {}
 
     @Override
     public void updatePlayerScoreboard(GamePlayer player, TurtlePlayerScoreboard scoreboard) {

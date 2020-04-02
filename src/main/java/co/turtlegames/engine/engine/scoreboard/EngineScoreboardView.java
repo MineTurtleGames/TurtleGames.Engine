@@ -5,8 +5,7 @@ import co.turtlegames.core.profile.ProfileManager;
 import co.turtlegames.core.scoreboard.ScoreboardView;
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
 import co.turtlegames.engine.engine.GameManager;
-import co.turtlegames.engine.engine.game.GamePlayer;
-import org.bukkit.scoreboard.Score;
+import co.turtlegames.engine.engine.game.player.GamePlayer;
 
 public class EngineScoreboardView extends ScoreboardView {
 

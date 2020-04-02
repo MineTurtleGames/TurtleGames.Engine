@@ -10,12 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-public class JoinListener implements Listener {
+public class JoinLeaveListener implements Listener {
 
     private GameManager _gameManager;
 
-    public JoinListener(GameManager gameManager) {
+    public JoinLeaveListener(GameManager gameManager) {
         _gameManager = gameManager;
     }
 
@@ -44,6 +45,11 @@ public class JoinListener implements Listener {
 
         ply.playSound(ply.getLocation(), Sound.LEVEL_UP, 1, 1);
 
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        _gameManager.purgeGamePlayer(event.getPlayer());
     }
 
 }

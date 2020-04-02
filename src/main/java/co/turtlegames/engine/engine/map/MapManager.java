@@ -1,11 +1,12 @@
 package co.turtlegames.engine.engine.map;
 
 import co.turtlegames.core.TurtleModule;
+import co.turtlegames.core.file.minio.FileClusterManager;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.core.world.tworld.loader.TurtleWorldLoader;
 import co.turtlegames.engine.engine.game.GameType;
 import co.turtlegames.engine.engine.map.action.FetchAvailableGameMapsAction;
-import co.turtlegames.core.world.gen.VoidGenerator;
+import co.turtlegames.core.world.gen.BarrierGenerator;
 import co.turtlegames.core.world.virtual.VirtualWorldManager;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
@@ -66,23 +67,26 @@ public class MapManager extends TurtleModule {
             possibleMap = availableMaps.get(i);
             i++;
 
-        } while(!possibleMap.valid());
+        } while(!possibleMap.valid(this.getModule(FileClusterManager.class)));
 
         _activeMap = possibleMap;
         return _activeMap;
 
     }
 
-    public void loadWorld() {
+    public boolean loadWorld() {
 
         try {
 
-            TurtleWorldFormat worldFormat = _activeMap.resolveTurtleWorld();
+            TurtleWorldFormat worldFormat = _activeMap.resolveTurtleWorld(this.getModule(FileClusterManager.class));
             _activeWorld = this.loadTurtleWorld(worldFormat);
+
+            return true;
 
         } catch (IOException ex) {
 
             ex.printStackTrace();
+            return false;
 
         }
 
@@ -110,10 +114,18 @@ public class MapManager extends TurtleModule {
         WorldCreator creator = new WorldCreator("map_active");
 
         creator.type(WorldType.NORMAL);
-        creator.generator(new VoidGenerator());
+        creator.generator(new BarrierGenerator());
 
         return creator;
 
+    }
+
+    public MapToken getActiveMap() {
+        return _activeMap;
+    }
+
+    public World getActiveWorld() {
+        return _activeWorld;
     }
 
 }

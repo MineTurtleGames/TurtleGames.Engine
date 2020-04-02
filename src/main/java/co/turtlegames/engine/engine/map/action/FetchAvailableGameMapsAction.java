@@ -39,7 +39,7 @@ public class FetchAvailableGameMapsAction implements IDatabaseAction<List<MapTok
                     rs.getString("description")
                             .split("\n"),
                     GameType.valueOf(rs.getString("game")),
-                    new File(rs.getString("location"))));
+                    rs.getString("location")));
         }
 
         return mapTokens;
