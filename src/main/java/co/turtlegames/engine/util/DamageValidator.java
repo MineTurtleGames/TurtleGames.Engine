@@ -1,0 +1,4 @@
+package co.turtlegames.engine.util;
+
+public class DamageValidator {
+}
