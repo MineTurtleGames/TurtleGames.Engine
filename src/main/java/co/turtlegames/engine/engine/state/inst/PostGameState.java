@@ -7,35 +7,33 @@ import co.turtlegames.engine.engine.prevention.PreventionSet;
 import co.turtlegames.engine.engine.state.AbstractStateProvider;
 import co.turtlegames.engine.util.TickRate;
 
-public class InGameState extends AbstractStateProvider {
+public class PostGameState extends AbstractStateProvider {
+
+    private PreventionSet _preventionSet;
+
+    private static final int STATE_TICKS = 10 * 20;
+    private int _tickTimer;
 
     private GameManager _gameManager;
 
-    public InGameState(GameManager gameManager) {
-        _gameManager = gameManager;
-    }
-
     @Override
     public void doInitialTick() {
-        _gameManager.getGameInstance().handleGameStart();
+
     }
 
     @Override
     public void doTick(TickRate tickRate) {
 
-        _gameManager.getDamageManager().doGameTick(tickRate);
-        _gameManager.getGameInstance().handleTick(tickRate);
-
     }
 
     @Override
     public void updatePlayerScoreboard(GamePlayer gamePlayer, TurtlePlayerScoreboard scoreboard) {
-        _gameManager.getGameInstance().updatePlayerScoreboard(gamePlayer, scoreboard);
+
     }
 
     @Override
     public PreventionSet getPreventionSet() {
-        return _gameManager.getGameOptions();
+        return _preventionSet;
     }
 
 }

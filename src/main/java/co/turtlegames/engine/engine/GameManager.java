@@ -8,11 +8,11 @@ import co.turtlegames.core.scoreboard.TurtleScoreboardManager;
 import co.turtlegames.core.util.ItemBuilder;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.core.world.tworld.TurtleWorldMetaPoint;
-import co.turtlegames.engine.engine.death.DeathManager;
+import co.turtlegames.engine.engine.command.GameCommand;
+import co.turtlegames.engine.engine.damage.DamageManager;
 import co.turtlegames.engine.engine.game.*;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.PlayerState;
-import co.turtlegames.engine.engine.kit.Kit;
 import co.turtlegames.engine.engine.kit.command.KitCommand;
 import co.turtlegames.engine.engine.listeners.JoinLeaveListener;
 import co.turtlegames.engine.engine.listeners.LobbyEventListener;
@@ -28,13 +28,13 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import sun.plugin.dom.exception.InvalidStateException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -48,19 +48,21 @@ public class GameManager extends TurtleModule {
     private GameState _currentState = GameState.INACTIVE;
     private GameType _gameType = null;
 
-    private DeathManager _deathManager;
+    private DamageManager _damageManager;
 
     private AbstractGame _gameInstance = null;
 
     private Map<GameState, AbstractStateProvider> _stateHandlers = new HashMap<>();
     private Map<UUID, GamePlayer> _gamePlayers = new HashMap<>();
 
+    private boolean _forceStart = false;
+
     private int _i = 0;
 
     public GameManager(JavaPlugin pluginInstance) {
 
         super(pluginInstance,"Game Manager");
-        _deathManager = new DeathManager(this);
+        _damageManager = new DamageManager(this);
 
     }
 
@@ -79,6 +81,7 @@ public class GameManager extends TurtleModule {
         this.registerListener(new JoinLeaveListener(this));
         this.registerListener(new LobbyEventListener(this));
 
+        this.registerCommand(new GameCommand(this));
         this.registerCommand(new KitCommand(this));
 
         this.getModule(TurtleScoreboardManager.class)
@@ -88,7 +91,10 @@ public class GameManager extends TurtleModule {
 
     }
 
-    private void setGame(GameType gameType) {
+    public void setGame(GameType gameType) {
+
+        if (_currentState != GameState.INACTIVE && _currentState != GameState.LOBBY)
+            throw new InvalidStateException("Attempting to change game while game in progress.");
 
         _gameType = gameType;
         try {
@@ -136,7 +142,6 @@ public class GameManager extends TurtleModule {
     public void switchState(GameState gameState) {
 
         HandlerList.unregisterAll(_stateHandlers.get(_currentState));
-
         _currentState = gameState;
 
         getPlugin().getServer().getPluginManager().registerEvents(_stateHandlers.get(_currentState), getPlugin());
@@ -145,7 +150,7 @@ public class GameManager extends TurtleModule {
                 .doInitialTick();
 
         this.getModule(TurtleScoreboardManager.class)
-                .updateAll();
+                .updateAll(true);
 
     }
 
@@ -170,7 +175,7 @@ public class GameManager extends TurtleModule {
         if(_gameInstance == null)
             return false;
 
-        return Bukkit.getOnlinePlayers().size() >= this.getGameOptions().getMinPlayers();
+        return Bukkit.getOnlinePlayers().size() >= this.getGameOptions().getMinPlayers() || _forceStart;
 
     }
 
@@ -339,8 +344,11 @@ public class GameManager extends TurtleModule {
         _gamePlayers.remove(player.getUniqueId());
     }
 
-    public DeathManager getDeathManager() {
-        return _deathManager;
+    public DamageManager getDamageManager() {
+        return _damageManager;
     }
 
+    public void setForceStart(boolean forceStart) {
+        _forceStart = forceStart;
+    }
 }

@@ -1,8 +1,8 @@
-package co.turtlegames.engine.engine.death.listener;
+package co.turtlegames.engine.engine.damage.listener;
 
-import co.turtlegames.core.stats.PlayerStat;
 import co.turtlegames.engine.engine.GameManager;
-import co.turtlegames.engine.engine.death.DeathManager;
+import co.turtlegames.engine.engine.damage.DamageManager;
+import co.turtlegames.engine.engine.damage.DamageToken;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.PlayerState;
 import co.turtlegames.engine.engine.state.GameState;
@@ -15,16 +15,16 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class GameDamageHandle implements Listener {
 
-    private DeathManager _deathManager;
+    private DamageManager _damageManager;
 
-    public GameDamageHandle(DeathManager deathManager) {
-        _deathManager = deathManager;
+    public GameDamageHandle(DamageManager damageManager) {
+        _damageManager = damageManager;
     }
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
 
-        GameManager gameManager = _deathManager.getGameManager();
+        GameManager gameManager = _damageManager.getGameManager();
 
         if(gameManager.getState() != GameState.IN_GAME)
             return;
@@ -43,11 +43,16 @@ public class GameDamageHandle implements Listener {
 
         }
 
-        if(!DamageValidator.canDamage(_deathManager.getGameManager(), event)) {
+        if(!DamageValidator.canDamage(_damageManager.getGameManager(), event)) {
 
             event.setCancelled(true);
             return;
 
+        }
+
+        if (event.getCause() != EntityDamageEvent.DamageCause.CUSTOM) {
+            DamageToken damageToken = new DamageToken(System.currentTimeMillis(), event);
+            gamePlayer.registerDamageToken(damageToken);
         }
 
         if(ply.getHealth() - event.getFinalDamage() > 0)
@@ -58,9 +63,8 @@ public class GameDamageHandle implements Listener {
 
         ply.setHealth(20);
 
-        Bukkit.broadcastMessage(_deathManager.generateDeathMessage(event));
-
-        _deathManager.killPlayer(gameManager.getGamePlayer(ply, true));
+        Bukkit.broadcastMessage(_damageManager.generateDeathMessage(event));
+        _damageManager.killPlayer(gameManager.getGamePlayer(ply, true));
 
     }
 

@@ -22,7 +22,9 @@ public class KitCommand extends CommandBase<GameManager> {
 
         Player ply = profile.getOwner();
 
-        if(this.getModule().getState() != GameState.LOBBY) {
+        GameState currentState = this.getModule().getState();
+        if(currentState != GameState.LOBBY &&
+                currentState != GameState.INACTIVE) {
 
             ply.sendMessage(Chat.main("Error", "You can not change your kit at this time"));
             return;

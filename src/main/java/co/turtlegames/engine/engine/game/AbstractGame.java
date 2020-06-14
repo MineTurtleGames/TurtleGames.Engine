@@ -1,10 +1,13 @@
 package co.turtlegames.engine.engine.game;
 
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
+import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.engine.engine.GameManager;
+import co.turtlegames.engine.engine.damage.DamageToken;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.PlayerState;
 import co.turtlegames.engine.engine.kit.Kit;
+import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.util.TickRate;
 import co.turtlegames.engine.util.UtilEntity;
 import org.bukkit.Material;
@@ -43,6 +46,10 @@ public abstract class AbstractGame {
         return _kits;
     }
 
+    public GameManager getGameManager() {
+        return _gameManager;
+    }
+
     public void handleTick(TickRate tickRate) {
 
         if(tickRate == TickRate.SECOND
@@ -60,11 +67,43 @@ public abstract class AbstractGame {
             Material mat = ply.getLocation().getBlock().getType();
 
             if(mat == Material.WATER
-                    || mat == Material.STATIONARY_WATER)
-                UtilEntity.damage(ply, 3);
+                    || mat == Material.STATIONARY_WATER) {
+                EntityDamageEvent event = UtilEntity.damage(ply, 3);
+                gPlayer.registerDamageToken(new DamageToken(System.currentTimeMillis(), event, "Water Damage"));
+            }
 
         }
 
     }
+
+    private void endGame() {
+
+        if(_gameManager.getState() != GameState.IN_GAME)
+            return;
+
+        _gameManager.switchState(GameState.POST_GAME);
+
+    }
+
+    public void endGame(String reason) {
+
+        this.endGame();
+
+    }
+
+    public void endGameWithTeam(GameTeam team) {
+
+    }
+
+    public void endGameWithPlayer(GamePlayer player) {
+
+    }
+
+    public void handlePreGameStart() {}
+    public void handleGameStart() {}
+
+    public void handleMapConfiguration(TurtleWorldFormat tWorld) {}
+
+    public void handleGameEnd() {}
 
 }

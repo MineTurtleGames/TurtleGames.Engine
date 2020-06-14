@@ -3,10 +3,15 @@ package co.turtlegames.engine.engine.game.player;
 import co.turtlegames.core.profile.PlayerProfile;
 import co.turtlegames.core.stats.PlayerStat;
 import co.turtlegames.engine.engine.GameManager;
+import co.turtlegames.engine.engine.damage.DamageToken;
 import co.turtlegames.engine.engine.game.GameTeam;
 import co.turtlegames.engine.engine.kit.Kit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class GamePlayer {
 
@@ -16,6 +21,8 @@ public class GamePlayer {
     private Kit _kit;
 
     private PlayerState _playerState = PlayerState.SPECTATOR;
+
+    private List<DamageToken> _damageTokens = new ArrayList<>();
 
     public GamePlayer(PlayerProfile playerProfile) {
         _profile = playerProfile;
@@ -55,6 +62,14 @@ public class GamePlayer {
 
     public PlayerState getState() {
         return _playerState;
+    }
+
+    public List<DamageToken> getDamageTokens() {
+        return _damageTokens;
+    }
+
+    public void registerDamageToken(DamageToken token) {
+        _damageTokens.add(token);
     }
 
 }

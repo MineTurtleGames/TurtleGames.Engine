@@ -17,8 +17,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class PreGameState extends AbstractStateProvider {
 
     private PreventionSet _preventionSet = new PreventionSet();
-    private static final int STATE_TICKS = 10 * 20;
 
+    private static final int STATE_TICKS = 10 * 20;
     private int _tickTimer;
 
     private GameManager _gameManager;
@@ -29,7 +29,12 @@ public class PreGameState extends AbstractStateProvider {
 
     @Override
     public void doInitialTick() {
+
         _tickTimer = STATE_TICKS;
+        _gameManager.setForceStart(false);
+
+        _gameManager.getGameInstance().handlePreGameStart();
+
     }
 
     @Override

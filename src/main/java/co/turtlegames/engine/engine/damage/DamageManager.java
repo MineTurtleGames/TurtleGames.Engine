@@ -1,9 +1,9 @@
-package co.turtlegames.engine.engine.death;
+package co.turtlegames.engine.engine.damage;
 
 import co.turtlegames.core.common.Chat;
 import co.turtlegames.core.util.UtilString;
 import co.turtlegames.engine.engine.GameManager;
-import co.turtlegames.engine.engine.death.listener.GameDamageHandle;
+import co.turtlegames.engine.engine.damage.listener.GameDamageHandle;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.PlayerState;
 import co.turtlegames.engine.engine.visiblity.VisibilityManager;
@@ -12,16 +12,16 @@ import co.turtlegames.engine.util.UtilGameString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class DeathManager {
+public class DamageManager {
 
     private class DeathToken {
 
@@ -46,7 +46,7 @@ public class DeathManager {
     private GameManager _gameManager;
     private Set<DeathToken> _deathTokens;
 
-    public DeathManager(GameManager gameManager) {
+    public DamageManager(GameManager gameManager) {
 
         _gameManager = gameManager;
         _deathTokens = new HashSet<>();
@@ -60,10 +60,43 @@ public class DeathManager {
         if(gPlayer.getState() != PlayerState.ALIVE)
             return;
 
-        gPlayer.switchState(PlayerState.DEAD);
-        _deathTokens.add(new DeathToken(gPlayer, System.currentTimeMillis()));
+        long deathTime = System.currentTimeMillis();
 
-        this.doDeathEffect(gPlayer.getPlayer());
+        gPlayer.switchState(PlayerState.DEAD);
+        _deathTokens.add(new DeathToken(gPlayer, deathTime));
+
+        List<DamageToken> damageTokens = gPlayer.getDamageTokens();
+
+        Player ply = gPlayer.getPlayer();
+
+        int maxIndex = damageTokens.size() - 1;
+        for(int i = 0; i < damageTokens.size(); i++) {
+
+            if(i > 10) {
+
+                ply.sendMessage(ChatColor.GRAY + " ... and " + (maxIndex - i)  + " older events");
+                break;
+
+            }
+            DamageToken token = damageTokens.get(i);
+
+            String timeSinceDamage = UtilString.formatTime(deathTime - token.getDamageTime());
+
+            String damageCause;
+
+            if (token.getCustomCause() != null) {
+                damageCause = token.getCustomCause();
+            } else {
+                damageCause = UtilGameString.vanity(token.getEvent().getCause());
+            }
+
+            ply.sendMessage(ChatColor.DARK_GREEN + ChatColor.BOLD.toString() + "Damage Log: "
+                    + ChatColor.GREEN + timeSinceDamage + " - " + damageCause + ": -"
+                    + ChatColor.RED + token.getEvent().getDamage()/2 + " ♡");
+        }
+        damageTokens.clear();
+
+        this.doDeathEffect(ply);
 
     }
 
@@ -76,6 +109,12 @@ public class DeathManager {
 
         token.getDead().switchState(PlayerState.ALIVE);
         token.getDead().getKit().apply(ply);
+
+        ply.setAllowFlight(false);
+        ply.setFlying(false);
+
+        ply.setFallDistance(0);
+        ply.setFireTicks(0);
 
         _gameManager.getModule(VisibilityManager.class)
                 .showPlayer(ply);
@@ -90,6 +129,16 @@ public class DeathManager {
         long respawnTime = _gameManager.getGameOptions().getDeathTime();
 
         ply.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 100));
+
+        ply.setAllowFlight(true);
+        ply.setFlying(true);
+
+        ply.setFallDistance(0);
+        ply.setFireTicks(0);
+
+        ply.getWorld().playSound(ply.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+
+        ply.teleport(ply.getLocation().add(new Vector(0, 5, 0)));
 
         ply.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "You died. "
                 + ChatColor.GREEN + ChatColor.BOLD.toString() + "Don't sweat it - you'll respawn in "

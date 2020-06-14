@@ -65,7 +65,7 @@ public class ResetGameState extends AbstractStateProvider {
 
         }
 
-
+        _gameManager.getGameInstance().handleMapConfiguration(token.getTurtleWorld());
         _gameManager.switchState(GameState.LOBBY);
 
 

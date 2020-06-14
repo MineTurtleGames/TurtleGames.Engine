@@ -103,7 +103,9 @@ public class MapManager extends TurtleModule {
         world.setDifficulty(Difficulty.HARD);
 
         world.setTime(1000);
+
         world.setGameRuleValue("doDaylightCycle", "false");
+        world.setGameRuleValue("doMobSpawning", "false");
 
         return world;
 
