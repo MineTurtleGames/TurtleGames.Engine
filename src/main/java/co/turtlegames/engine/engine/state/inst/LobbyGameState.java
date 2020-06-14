@@ -137,14 +137,5 @@ public class LobbyGameState extends AbstractStateProvider {
 
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-
-        Player player = event.getPlayer();
-        player.setGameMode(GameMode.ADVENTURE);
-        player.getInventory().clear();
-
-    }
-
 
 }

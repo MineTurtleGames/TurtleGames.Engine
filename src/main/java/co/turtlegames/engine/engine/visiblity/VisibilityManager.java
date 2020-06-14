@@ -33,7 +33,7 @@ public class VisibilityManager extends TurtleModule {
         _invisible.remove(ply.getUniqueId());
 
         for(Player otherPlayer : Bukkit.getOnlinePlayers())
-            otherPlayer.showPlayer(otherPlayer);
+            otherPlayer.showPlayer(ply);
 
     }
 

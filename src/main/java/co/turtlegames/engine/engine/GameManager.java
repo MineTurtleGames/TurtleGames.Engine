@@ -5,12 +5,15 @@ import co.turtlegames.core.common.Chat;
 import co.turtlegames.core.profile.PlayerProfile;
 import co.turtlegames.core.profile.ProfileManager;
 import co.turtlegames.core.scoreboard.TurtleScoreboardManager;
+import co.turtlegames.core.util.ItemBuilder;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.core.world.tworld.TurtleWorldMetaPoint;
 import co.turtlegames.engine.engine.death.DeathManager;
 import co.turtlegames.engine.engine.game.*;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.PlayerState;
+import co.turtlegames.engine.engine.kit.Kit;
+import co.turtlegames.engine.engine.kit.command.KitCommand;
 import co.turtlegames.engine.engine.listeners.JoinLeaveListener;
 import co.turtlegames.engine.engine.listeners.LobbyEventListener;
 import co.turtlegames.engine.engine.map.MapManager;
@@ -24,12 +27,11 @@ import co.turtlegames.engine.util.TickRate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -40,6 +42,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class GameManager extends TurtleModule {
+
+    public static final Location LOBBY_POS = new Location(Bukkit.getWorld("world"), -115.5, 130, -107.5);;
 
     private GameState _currentState = GameState.INACTIVE;
     private GameType _gameType = null;
@@ -74,6 +78,8 @@ public class GameManager extends TurtleModule {
 
         this.registerListener(new JoinLeaveListener(this));
         this.registerListener(new LobbyEventListener(this));
+
+        this.registerCommand(new KitCommand(this));
 
         this.getModule(TurtleScoreboardManager.class)
                 .updateScoreboardView(new EngineScoreboardView(this));
@@ -273,13 +279,6 @@ public class GameManager extends TurtleModule {
 
     public void startPreGame() {
 
-        if(!this.getModule(MapManager.class).loadWorld()) {
-
-            this.switchState(GameState.RESET);
-            return;
-
-        }
-
         this.preparePlayers();
         this.warpPlayersToWorld();
 
@@ -314,6 +313,17 @@ public class GameManager extends TurtleModule {
 
         return tWorld.getMetaPoints().get(gPlayer.getTeam().getId())
                     .iterator().next().getPrimaryPosition().toLocation(mapManager.getActiveWorld());
+
+    }
+
+    public void giveLobbyItems(Player ply) {
+
+        Inventory inv = ply.getInventory();
+        inv.clear();
+
+        inv.setItem(0, new ItemBuilder(Material.COMPASS, ChatColor.GOLD + "Select Kit").build());
+        inv.setItem(4, new ItemBuilder(Material.CHEST, ChatColor.LIGHT_PURPLE + "Funbox").build());
+        inv.setItem(8, new ItemBuilder(Material.BED, ChatColor.GRAY + "Return to hub").build());
 
     }
 

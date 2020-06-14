@@ -11,6 +11,7 @@ import co.turtlegames.engine.engine.state.AbstractStateProvider;
 import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.util.TickRate;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class ResetGameState extends AbstractStateProvider {
 
@@ -48,8 +49,25 @@ public class ResetGameState extends AbstractStateProvider {
 
         }
 
+        if(!mapManager.loadWorld()) {
+
+            _gameManager.switchState(GameState.RESET);
+            return;
+
+        }
+
         Bukkit.broadcastMessage(Chat.main("Map", "The map was set to " + Chat.elem(token.getName()) + " by" + Chat.elem("TurtleGames")));
+
+        for(Player ply : Bukkit.getOnlinePlayers()) {
+
+            ply.teleport(GameManager.LOBBY_POS);
+            _gameManager.giveLobbyItems(ply);
+
+        }
+
+
         _gameManager.switchState(GameState.LOBBY);
+
 
     }
 

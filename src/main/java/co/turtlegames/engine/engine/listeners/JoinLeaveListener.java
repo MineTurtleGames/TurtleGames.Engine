@@ -35,8 +35,10 @@ public class JoinLeaveListener implements Listener {
 
         } else {
 
-            joinPosition = new Location(Bukkit.getWorld("world"), -115.5, 130, -107.5);
+            joinPosition = GameManager.LOBBY_POS;
             joinMessage = Chat.main("Welcome", "Welcome to " + Chat.elem("TurtleGames") + "! A game will start soon!");
+
+            _gameManager.giveLobbyItems(ply);
 
         }
 

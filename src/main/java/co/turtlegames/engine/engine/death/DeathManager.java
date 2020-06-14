@@ -19,10 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DeathManager {
 
@@ -72,17 +69,19 @@ public class DeathManager {
 
     private void respawnPlayer(DeathToken token) {
 
-        _deathTokens.remove(token);
-
         Player ply = token.getDead().getPlayer();
 
-        ply.sendMessage(Chat.main("Dead", "You have respawned!"));
-        ply.teleport(_gameManager.findApplicableRespawnPoint(token.getDead()));
+        if(ply == null)
+            return;
 
         token.getDead().switchState(PlayerState.ALIVE);
+        token.getDead().getKit().apply(ply);
 
         _gameManager.getModule(VisibilityManager.class)
                 .showPlayer(ply);
+
+        ply.sendMessage(Chat.main("Dead", "You have respawned!"));
+        ply.teleport(_gameManager.findApplicableRespawnPoint(token.getDead()));
 
     }
 
@@ -92,7 +91,7 @@ public class DeathManager {
 
         ply.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 100));
 
-        ply.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "You died."
+        ply.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "You died. "
                 + ChatColor.GREEN + ChatColor.BOLD.toString() + "Don't sweat it - you'll respawn in "
                 + ChatColor.GOLD + ChatColor.BOLD.toString() + UtilString.formatTime(respawnTime));
 
@@ -116,9 +115,19 @@ public class DeathManager {
         long deathTime = _gameManager.getGameOptions().getDeathTime();
 
 
-        _deathTokens.parallelStream()
-                .filter((DeathToken token) -> (curTimeMs - token.getDeathTime()) > deathTime)
-                    .forEach(this::respawnPlayer);
+        Iterator<DeathToken> tokenIterator = _deathTokens.iterator();
+
+        while(tokenIterator.hasNext()) {
+
+            DeathToken token = tokenIterator.next();
+
+            if((curTimeMs - token.getDeathTime()) < deathTime)
+                continue;
+
+            this.respawnPlayer(token);
+            tokenIterator.remove();
+
+        }
 
     }
 

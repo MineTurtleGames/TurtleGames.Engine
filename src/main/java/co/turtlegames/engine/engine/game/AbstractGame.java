@@ -6,6 +6,7 @@ import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.PlayerState;
 import co.turtlegames.engine.engine.kit.Kit;
 import co.turtlegames.engine.util.TickRate;
+import co.turtlegames.engine.util.UtilEntity;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -60,7 +61,7 @@ public abstract class AbstractGame {
 
             if(mat == Material.WATER
                     || mat == Material.STATIONARY_WATER)
-                ply.damage(1);
+                UtilEntity.damage(ply, 3);
 
         }
 
