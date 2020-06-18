@@ -38,6 +38,8 @@ public class KitPage extends Page<KitMenu> {
 
             });
 
+            slot++;
+
         }
 
     }

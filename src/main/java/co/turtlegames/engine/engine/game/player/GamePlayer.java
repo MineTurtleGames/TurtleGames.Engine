@@ -5,6 +5,7 @@ import co.turtlegames.core.stats.PlayerStat;
 import co.turtlegames.engine.engine.GameManager;
 import co.turtlegames.engine.engine.damage.DamageToken;
 import co.turtlegames.engine.engine.game.GameTeam;
+import co.turtlegames.engine.engine.game.player.progress.DeferredPlayerProgress;
 import co.turtlegames.engine.engine.kit.Kit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -20,12 +21,17 @@ public class GamePlayer {
     private GameTeam _team;
     private Kit _kit;
 
+    private DeferredPlayerProgress _deferredProgress;
+
     private PlayerState _playerState = PlayerState.SPECTATOR;
 
     private List<DamageToken> _damageTokens = new ArrayList<>();
 
     public GamePlayer(PlayerProfile playerProfile) {
+
         _profile = playerProfile;
+        _deferredProgress = new DeferredPlayerProgress(this);
+
     }
 
     public PlayerProfile getPlayerProfile() {
@@ -70,6 +76,14 @@ public class GamePlayer {
 
     public void registerDamageToken(DamageToken token) {
         _damageTokens.add(token);
+    }
+
+    public DeferredPlayerProgress getDeferredProgress() {
+        return _deferredProgress;
+    }
+
+    public void resetDeferredProgress() {
+        _deferredProgress = new DeferredPlayerProgress(this);
     }
 
 }

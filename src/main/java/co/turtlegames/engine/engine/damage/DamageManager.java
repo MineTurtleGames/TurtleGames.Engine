@@ -128,7 +128,7 @@ public class DamageManager {
 
         long respawnTime = _gameManager.getGameOptions().getDeathTime();
 
-        ply.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 100));
+        ply.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 100));
 
         ply.setAllowFlight(true);
         ply.setFlying(true);
@@ -136,7 +136,7 @@ public class DamageManager {
         ply.setFallDistance(0);
         ply.setFireTicks(0);
 
-        ply.getWorld().playSound(ply.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+        ply.getWorld().playSound(ply.getLocation(), Sound.HURT_FLESH, 1, 1);
 
         ply.teleport(ply.getLocation().add(new Vector(0, 5, 0)));
 

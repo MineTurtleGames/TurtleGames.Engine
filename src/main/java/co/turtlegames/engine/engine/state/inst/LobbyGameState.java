@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class LobbyGameState extends AbstractStateProvider {
 
     private PreventionSet _preventionSet;
-    private static final int STATE_TICKS = 20 * 20;
+    private static final int STATE_TICKS = 60 * 20;
 
     private GameManager _gameManager;
 
@@ -137,5 +137,9 @@ public class LobbyGameState extends AbstractStateProvider {
 
     }
 
+
+    public void setTimerTicks(int i) {
+        _tickTimer = i;
+    }
 
 }

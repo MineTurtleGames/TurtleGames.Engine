@@ -16,6 +16,7 @@ import co.turtlegames.engine.engine.game.player.PlayerState;
 import co.turtlegames.engine.engine.kit.command.KitCommand;
 import co.turtlegames.engine.engine.listeners.JoinLeaveListener;
 import co.turtlegames.engine.engine.listeners.LobbyEventListener;
+import co.turtlegames.engine.engine.listeners.NameColourListener;
 import co.turtlegames.engine.engine.map.MapManager;
 import co.turtlegames.engine.engine.map.MapToken;
 import co.turtlegames.engine.engine.scoreboard.EngineScoreboardView;
@@ -34,7 +35,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import sun.plugin.dom.exception.InvalidStateException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutionException;
 
 public class GameManager extends TurtleModule {
 
-    public static final Location LOBBY_POS = new Location(Bukkit.getWorld("world"), -115.5, 130, -107.5);;
+    public static final Location LOBBY_POS = new Location(Bukkit.getWorld("world"), -133.5, 90, -135.5);;
 
     private GameState _currentState = GameState.INACTIVE;
     private GameType _gameType = null;
@@ -77,9 +77,11 @@ public class GameManager extends TurtleModule {
         this.registerStateProvider(GameState.INACTIVE, new InactiveGameState(this));
         this.registerStateProvider(GameState.PRE_GAME, new PreGameState(this));
         this.registerStateProvider(GameState.IN_GAME, new InGameState(this));
+        this.registerStateProvider(GameState.POST_GAME, new PostGameState(this));
 
         this.registerListener(new JoinLeaveListener(this));
         this.registerListener(new LobbyEventListener(this));
+        this.registerListener(new NameColourListener(this));
 
         this.registerCommand(new GameCommand(this));
         this.registerCommand(new KitCommand(this));
@@ -94,7 +96,7 @@ public class GameManager extends TurtleModule {
     public void setGame(GameType gameType) {
 
         if (_currentState != GameState.INACTIVE && _currentState != GameState.LOBBY)
-            throw new InvalidStateException("Attempting to change game while game in progress.");
+            throw new EngineStateException("Attempting to change game while game in progress.");
 
         _gameType = gameType;
         try {
@@ -152,6 +154,9 @@ public class GameManager extends TurtleModule {
         this.getModule(TurtleScoreboardManager.class)
                 .updateAll(true);
 
+        for(Player ply : Bukkit.getOnlinePlayers())
+            this.getModule(TurtleScoreboardManager.class)
+                    .pokeAllTeamData(ply);
     }
 
     public IGameState getStateHandle() {

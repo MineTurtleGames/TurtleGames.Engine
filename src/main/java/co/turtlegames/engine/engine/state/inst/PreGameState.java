@@ -33,6 +33,7 @@ public class PreGameState extends AbstractStateProvider {
         _tickTimer = STATE_TICKS;
         _gameManager.setForceStart(false);
 
+        _gameManager.getGameInstance().registerEvents();
         _gameManager.getGameInstance().handlePreGameStart();
 
     }

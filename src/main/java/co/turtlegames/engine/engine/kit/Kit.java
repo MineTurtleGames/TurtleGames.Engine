@@ -2,6 +2,7 @@ package co.turtlegames.engine.engine.kit;
 
 import co.turtlegames.core.util.ItemBuilder;
 import co.turtlegames.engine.engine.game.GameType;
+import co.turtlegames.engine.engine.kit.type.IKitPurchaseable;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,21 +11,19 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public abstract class Kit implements Listener {
 
     private String _name;
     private String[] _description;
-    private int _coinPrice;
-
     private Material _icon = Material.STONE_SWORD;
 
     private ArrayList<Player> _players = new ArrayList<>();
 
-    public Kit(String name, String[] description, int coinPrice) {
+    public Kit(String name, String[] description) {
         _name = name;
         _description = description;
-        _coinPrice = coinPrice;
     }
 
     public void apply(Player player) {
@@ -42,10 +41,6 @@ public abstract class Kit implements Listener {
         return _name;
     }
 
-    public int getCoinPrice() {
-        return _coinPrice;
-    }
-
     public ArrayList<Player> getPlayers() {
         return _players;
     }
@@ -54,11 +49,21 @@ public abstract class Kit implements Listener {
 
         ItemBuilder builder = new ItemBuilder(_icon, ChatColor.DARK_GREEN + _name);
 
-        builder.setLore(ChatColor.GRAY + "Unlock with " + _coinPrice + " coins",
+        builder.setLore(ChatColor.GREEN + this.getAccessMethod(),
                             "");
-        builder.addLore(Arrays.asList(_description));
+        builder.addLore(Arrays.stream(_description).map(str -> ChatColor.GRAY + str)
+                .collect(Collectors.toList()));
 
         return builder.build();
+
+    }
+
+    public String getAccessMethod() {
+
+        if(this instanceof IKitPurchaseable)
+            return "Unlock with " + ((IKitPurchaseable) this).getPrice() + " coins";
+
+        return "Free kit";
 
     }
 

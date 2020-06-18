@@ -12,6 +12,7 @@ public class GameCommand extends CommandBase<GameManager> {
 
         addSubCommand(new StartCommand(this));
         addSubCommand(new SetCommand(this));
+        this.addSubCommand(new StopCommand(this));
     }
 
     @Override

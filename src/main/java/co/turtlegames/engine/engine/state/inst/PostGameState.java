@@ -5,6 +5,7 @@ import co.turtlegames.engine.engine.GameManager;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.prevention.PreventionSet;
 import co.turtlegames.engine.engine.state.AbstractStateProvider;
+import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.util.TickRate;
 
 public class PostGameState extends AbstractStateProvider {
@@ -16,13 +17,22 @@ public class PostGameState extends AbstractStateProvider {
 
     private GameManager _gameManager;
 
+    public PostGameState(GameManager gameManager) {
+        _gameManager = gameManager;
+    }
+
     @Override
     public void doInitialTick() {
-
+        _tickTimer = STATE_TICKS;
     }
 
     @Override
     public void doTick(TickRate tickRate) {
+
+        _tickTimer--;
+
+        if(_tickTimer <= 0)
+            _gameManager.switchState(GameState.RESET);
 
     }
 
