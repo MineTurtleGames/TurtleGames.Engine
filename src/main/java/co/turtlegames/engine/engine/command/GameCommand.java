@@ -10,9 +10,11 @@ public class GameCommand extends CommandBase<GameManager> {
     public GameCommand(GameManager module) {
         super(module, Rank.ADMINISTRATOR, "game");
 
-        addSubCommand(new StartCommand(this));
-        addSubCommand(new SetCommand(this));
+        this.addSubCommand(new StartCommand(this));
+        this.addSubCommand(new SetCommand(this));
         this.addSubCommand(new StopCommand(this));
+        this.addSubCommand(new MapTeleportCommand(this));
+
     }
 
     @Override

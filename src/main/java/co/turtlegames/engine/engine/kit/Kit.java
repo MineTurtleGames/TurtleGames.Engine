@@ -2,6 +2,7 @@ package co.turtlegames.engine.engine.kit;
 
 import co.turtlegames.core.util.ItemBuilder;
 import co.turtlegames.engine.engine.game.GameType;
+import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.kit.type.IKitPurchaseable;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,30 +20,26 @@ public abstract class Kit implements Listener {
     private String[] _description;
     private Material _icon = Material.STONE_SWORD;
 
-    private ArrayList<Player> _players = new ArrayList<>();
+    public Kit(String name, String[] description, Material icon) {
 
-    public Kit(String name, String[] description) {
         _name = name;
         _description = description;
-    }
 
-    public void apply(Player player) {
-
-        player.getInventory().clear();
-
-        _players.add(player);
-        handleApply(player);
+        _icon = icon;
 
     }
 
-    public abstract void handleApply(Player player);
+    public void apply(GamePlayer gamePlayer) {
+
+        gamePlayer.getPlayer().getInventory().clear();
+        handleApply(gamePlayer);
+
+    }
+
+    public abstract void handleApply(GamePlayer player);
 
     public String getName() {
         return _name;
-    }
-
-    public ArrayList<Player> getPlayers() {
-        return _players;
     }
 
     public ItemStack createIcon() {

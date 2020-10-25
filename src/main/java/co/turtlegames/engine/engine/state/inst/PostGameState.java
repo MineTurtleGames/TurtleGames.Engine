@@ -23,6 +23,7 @@ public class PostGameState extends AbstractStateProvider {
 
     @Override
     public void doInitialTick() {
+
         _tickTimer = STATE_TICKS;
     }
 

@@ -56,7 +56,8 @@ public class InactiveGameState extends AbstractStateProvider {
             coinLine = UtilString.formatInteger(cD.getBalance(CurrencyType.COINS)) + " coins";
 
         scoreboard.setLine(5, ChatColor.WHITE + "Balance: " + ChatColor.YELLOW + coinLine);
-        scoreboard.setLine(6, ChatColor.WHITE + "Rank: " + ChatColor.YELLOW + profile.getRank().getName());
+        //scoreboard.setLine(6, ChatColor.WHITE + "Rank: " + profile.getRank().getColor() + profile.getRank().getName());
+        scoreboard.setLine(6, ChatColor.WHITE + "" + profile.hashCode());
 
         scoreboard.setLine(7, "");
 

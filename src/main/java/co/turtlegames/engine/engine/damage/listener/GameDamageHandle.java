@@ -26,7 +26,7 @@ public class GameDamageHandle implements Listener {
 
         GameManager gameManager = _damageManager.getGameManager();
 
-        if(gameManager.getState() != GameState.IN_GAME)
+        if (gameManager.getState() != GameState.IN_GAME)
             return;
 
         if(!(event.getEntity() instanceof Player))

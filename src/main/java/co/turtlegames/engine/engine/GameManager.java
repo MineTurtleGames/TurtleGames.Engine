@@ -6,6 +6,7 @@ import co.turtlegames.core.profile.PlayerProfile;
 import co.turtlegames.core.profile.ProfileManager;
 import co.turtlegames.core.scoreboard.TurtleScoreboardManager;
 import co.turtlegames.core.util.ItemBuilder;
+import co.turtlegames.core.util.UtilDev;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.core.world.tworld.TurtleWorldMetaPoint;
 import co.turtlegames.engine.engine.command.GameCommand;
@@ -24,6 +25,7 @@ import co.turtlegames.engine.engine.state.AbstractStateProvider;
 import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.engine.state.IGameState;
 import co.turtlegames.engine.engine.state.inst.*;
+import co.turtlegames.engine.engine.game.GameOptions;
 import co.turtlegames.engine.util.TickRate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
@@ -32,9 +34,12 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -43,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 
 public class GameManager extends TurtleModule {
 
-    public static final Location LOBBY_POS = new Location(Bukkit.getWorld("world"), -133.5, 90, -135.5);;
+    public static final Vector LOBBY_POS = new Vector(-133.5, 90d, -135.5);;
 
     private GameState _currentState = GameState.INACTIVE;
     private GameType _gameType = null;
@@ -56,6 +61,9 @@ public class GameManager extends TurtleModule {
     private Map<UUID, GamePlayer> _gamePlayers = new HashMap<>();
 
     private boolean _forceStart = false;
+
+    private long _gameStartTime;
+    private long _gameEndTime;
 
     private int _i = 0;
 
@@ -232,7 +240,7 @@ public class GameManager extends TurtleModule {
 
             if(gamePlayer.getKit() == null)
                 gamePlayer.setKit(_gameInstance.getKits().get(0));
-            gamePlayer.getKit().apply(ply);
+            gamePlayer.getKit().apply(gamePlayer);
 
             ply.setWalkSpeed(0);
             ply.setHealth(20);
@@ -303,6 +311,20 @@ public class GameManager extends TurtleModule {
 
     }
 
+    public void startGameTimer() {
+        UtilDev.alert(UtilDev.AlertLevel.LOG, "Started game timer at " + System.currentTimeMillis());
+        _gameStartTime = System.currentTimeMillis();
+    }
+
+    public void stopGameTimer() {
+        UtilDev.alert(UtilDev.AlertLevel.LOG, "Stopped game timer at " + System.currentTimeMillis());
+        _gameEndTime = System.currentTimeMillis();
+    }
+
+    public long getGameDuration() {
+        return _gameEndTime - _gameStartTime;
+    }
+
     public void removePlayerRestraints() {
 
         for(Player ply : Bukkit.getOnlinePlayers()) {
@@ -328,8 +350,10 @@ public class GameManager extends TurtleModule {
 
     public void giveLobbyItems(Player ply) {
 
-        Inventory inv = ply.getInventory();
+        PlayerInventory inv = ply.getInventory();
         inv.clear();
+
+        inv.setArmorContents(new ItemStack[4]);
 
         inv.setItem(0, new ItemBuilder(Material.COMPASS, ChatColor.GOLD + "Select Kit").build());
         inv.setItem(4, new ItemBuilder(Material.CHEST, ChatColor.LIGHT_PURPLE + "Funbox").build());
@@ -356,4 +380,9 @@ public class GameManager extends TurtleModule {
     public void setForceStart(boolean forceStart) {
         _forceStart = forceStart;
     }
+
+    public void resetGamePlayers() {
+        _gamePlayers = new HashMap<>();
+    }
+
 }

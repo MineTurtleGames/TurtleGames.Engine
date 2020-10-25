@@ -4,7 +4,6 @@ import co.turtlegames.core.common.Chat;
 import co.turtlegames.core.currency.CurrencyData;
 import co.turtlegames.core.currency.CurrencyType;
 import co.turtlegames.core.profile.PlayerProfile;
-import co.turtlegames.core.profile.ProfileManager;
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
 import co.turtlegames.core.util.UtilString;
 import co.turtlegames.core.util.UtilXp;
@@ -21,8 +20,9 @@ import co.turtlegames.engine.engine.state.GameState;
 import co.turtlegames.engine.util.TickRate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
+
 import java.util.Collection;
 
 public class ResetGameState extends AbstractStateProvider {
@@ -50,6 +50,8 @@ public class ResetGameState extends AbstractStateProvider {
         _gameManager.removePlayerRestraints();
 
         MapManager mapManager = _gameManager.getModule(MapManager.class);
+        mapManager.destroyActiveMap();
+
         MapToken token = mapManager.selectNewMap(_gameManager.getGameType());
 
         if(token == null) {
@@ -85,9 +87,11 @@ public class ResetGameState extends AbstractStateProvider {
 
         }
 
+        Location lobbyPos = _gameManager.getModule(MapManager.class).getLobbyTeleportPosition();
+
         for(Player ply : Bukkit.getOnlinePlayers()) {
 
-            ply.teleport(GameManager.LOBBY_POS);
+            ply.teleport(lobbyPos);
             _gameManager.giveLobbyItems(ply);
 
             GamePlayer gamePlayer = _gameManager.getGamePlayer(ply, false);
@@ -104,7 +108,7 @@ public class ResetGameState extends AbstractStateProvider {
             if(progress != null && progress.getAwards().size() > 0) {
 
                 long totalXp = 0;
-                double totalCoins = 0;
+                int totalCoins = 0;
 
                 Collection<DeferredAward> awards = progress.getAwards();
                 for(DeferredAward award : awards) {
@@ -121,9 +125,10 @@ public class ResetGameState extends AbstractStateProvider {
 
                 playerProfile.addXp(totalXp);
 
+                final int finalCoins = totalCoins;
                 playerProfile.fetchCurrencyData().thenAccept((CurrencyData currencyData) -> {
                     // TODO why not atomic?!?!?!?!?!?
-                    currencyData.setBalance(CurrencyType.COINS, currencyData.getBalance(CurrencyType.COINS));
+                    currencyData.setBalance(CurrencyType.COINS, currencyData.getBalance(CurrencyType.COINS) + finalCoins);
                 });
 
                 ply.sendMessage("\n    " + ChatColor.AQUA + "+" + UtilString.formatInteger((int) totalXp) + " XP"
@@ -140,8 +145,8 @@ public class ResetGameState extends AbstractStateProvider {
 
         }
 
+        _gameManager.resetGamePlayers();
         _gameManager.switchState(GameState.LOBBY);
-
 
     }
 

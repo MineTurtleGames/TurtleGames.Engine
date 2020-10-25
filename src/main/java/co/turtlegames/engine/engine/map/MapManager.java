@@ -3,18 +3,22 @@ package co.turtlegames.engine.engine.map;
 import co.turtlegames.core.TurtleModule;
 import co.turtlegames.core.file.minio.FileClusterManager;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
+import co.turtlegames.core.world.tworld.io.TurtleInputStream;
 import co.turtlegames.core.world.tworld.loader.TurtleWorldLoader;
+import co.turtlegames.core.world.virtual.VirtualWorld;
+import co.turtlegames.engine.engine.GameManager;
 import co.turtlegames.engine.engine.game.GameType;
 import co.turtlegames.engine.engine.map.action.FetchAvailableGameMapsAction;
 import co.turtlegames.core.world.gen.BarrierGenerator;
 import co.turtlegames.core.world.virtual.VirtualWorldManager;
-import org.bukkit.Difficulty;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class MapManager extends TurtleModule {
+
+    private World _lobbyWorld = null;
 
     private MapToken _activeMap = null;
     private World _activeWorld = null;
@@ -37,6 +43,9 @@ public class MapManager extends TurtleModule {
     }
 
     public MapToken selectNewMap(GameType type) {
+
+        if(_activeMap != null)
+            this.destroyActiveMap();
 
         FetchAvailableGameMapsAction mapFetchAction = new FetchAvailableGameMapsAction(type);
         CompletableFuture<List<MapToken>> dbResponseFuture = this.getDatabaseConnector().executeActionAsync(mapFetchAction, true);
@@ -71,6 +80,21 @@ public class MapManager extends TurtleModule {
 
         _activeMap = possibleMap;
         return _activeMap;
+
+    }
+
+    public void destroyActiveMap() {
+
+        VirtualWorldManager worldManager = this.getModule(VirtualWorldManager.class);
+
+        if(_activeWorld != null) {
+
+            worldManager.unloadVirtualWorld(_activeWorld);
+            _activeWorld = null;
+
+        }
+
+        _activeMap = null;
 
     }
 
@@ -113,7 +137,7 @@ public class MapManager extends TurtleModule {
 
     private WorldCreator createWorldCreator() {
 
-        WorldCreator creator = new WorldCreator("map_active");
+        WorldCreator creator = new WorldCreator("virtual_" + RandomStringUtils.randomAlphabetic(6));
 
         creator.type(WorldType.NORMAL);
         creator.generator(new BarrierGenerator());
@@ -124,6 +148,31 @@ public class MapManager extends TurtleModule {
 
     public MapToken getActiveMap() {
         return _activeMap;
+    }
+
+    public World getLobbyWorld() {
+
+        if(_lobbyWorld != null)
+            return _lobbyWorld;
+
+        FileClusterManager clusterManager = this.getModule(FileClusterManager.class);
+        try (InputStream stream = clusterManager.grabFileStream("map", "game_lobby")) {
+
+            TurtleWorldFormat format = TurtleWorldFormat.loadFromStream(new TurtleInputStream(stream));
+            _lobbyWorld = this.loadTurtleWorld(format);
+
+            System.out.println("Lobby loaded.");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return _lobbyWorld;
+
+    }
+
+    public Location getLobbyTeleportPosition() {
+        return GameManager.LOBBY_POS.toLocation(this.getLobbyWorld());
     }
 
     public World getActiveWorld() {

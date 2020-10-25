@@ -2,6 +2,7 @@ package co.turtlegames.engine.engine.listeners;
 
 import co.turtlegames.core.common.Chat;
 import co.turtlegames.engine.engine.GameManager;
+import co.turtlegames.engine.engine.map.MapManager;
 import co.turtlegames.engine.engine.state.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,7 +36,7 @@ public class JoinLeaveListener implements Listener {
 
         } else {
 
-            joinPosition = GameManager.LOBBY_POS;
+            joinPosition = _gameManager.getModule(MapManager.class).getLobbyTeleportPosition();
             joinMessage = Chat.main("Welcome", "Welcome to " + Chat.elem("TurtleGames") + "! A game will start soon!");
 
             _gameManager.giveLobbyItems(ply);

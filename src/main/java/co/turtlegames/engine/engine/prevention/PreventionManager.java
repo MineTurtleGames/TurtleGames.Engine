@@ -2,6 +2,7 @@ package co.turtlegames.engine.engine.prevention;
 
 import co.turtlegames.core.TurtleModule;
 import co.turtlegames.engine.engine.GameManager;
+import co.turtlegames.engine.engine.game.player.PlayerState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -37,6 +38,9 @@ public class PreventionManager extends TurtleModule {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
 
+        if (getModule(GameManager.class).getGamePlayer(event.getPlayer(), false).getState() != PlayerState.ALIVE)
+            event.setCancelled(true);
+
         if (!this.getCurrentPreventionSet().isBlockPlaceAllowed())
             event.setCancelled(true);
 
@@ -44,6 +48,9 @@ public class PreventionManager extends TurtleModule {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+
+        if (getModule(GameManager.class).getGamePlayer(event.getPlayer(), false).getState() != PlayerState.ALIVE)
+            event.setCancelled(true);
 
         if (!this.getCurrentPreventionSet().isBlockPlaceAllowed())
             event.setCancelled(true);

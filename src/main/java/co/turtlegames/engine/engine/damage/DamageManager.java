@@ -15,6 +15,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -70,6 +71,7 @@ public class DamageManager {
         Player ply = gPlayer.getPlayer();
 
         int maxIndex = damageTokens.size() - 1;
+
         for(int i = 0; i < damageTokens.size(); i++) {
 
             if(i > 10) {
@@ -108,7 +110,7 @@ public class DamageManager {
             return;
 
         token.getDead().switchState(PlayerState.ALIVE);
-        token.getDead().getKit().apply(ply);
+        token.getDead().getKit().apply(token.getDead());
 
         ply.setAllowFlight(false);
         ply.setFlying(false);
@@ -127,6 +129,9 @@ public class DamageManager {
     private void doDeathEffect(Player ply) {
 
         long respawnTime = _gameManager.getGameOptions().getDeathTime();
+
+        ply.getInventory().clear();
+        ply.getInventory().setArmorContents(new ItemStack[4]);
 
         ply.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 100));
 
@@ -189,11 +194,11 @@ public class DamageManager {
         Player dead = (Player) event.getEntity();
         String deathMessage = Chat.main("Death", Chat.elem(dead.getDisplayName()));
 
-        if(event instanceof EntityDamageByEntityEvent) {
+        if (event instanceof EntityDamageByEntityEvent) {
 
             EntityDamageByEntityEvent dbeEvent = (EntityDamageByEntityEvent) event;
 
-            if(dbeEvent.getEntity() instanceof Player) {
+            if (dbeEvent.getDamager() instanceof Player) {
 
                 Player killer = (Player) dbeEvent.getDamager();
 
@@ -205,7 +210,18 @@ public class DamageManager {
             }
 
         } else {
-            deathMessage += " was killed by " + Chat.elem(UtilGameString.vanity(event.getCause()));
+
+            String killer = UtilGameString.vanity(event.getCause());
+            GamePlayer gamePlayer = _gameManager.getGamePlayer(dead, false);
+
+            if (gamePlayer != null && event.getCause() == EntityDamageEvent.DamageCause.CUSTOM) {
+                DamageToken lastDamage = gamePlayer.getDamageTokens().get(gamePlayer.getDamageTokens().size() - 1);
+
+                killer =  lastDamage.getCustomCause();
+            }
+
+            deathMessage += " was killed by " + Chat.elem(killer);
+
         }
 
         return deathMessage;

@@ -1,6 +1,7 @@
 package co.turtlegames.engine.engine.game;
 
 import co.turtlegames.core.scoreboard.TurtlePlayerScoreboard;
+import co.turtlegames.core.util.UtilDev;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.engine.engine.GameManager;
 import co.turtlegames.engine.engine.damage.DamageToken;
@@ -8,6 +9,7 @@ import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.progress.DeferredAward;
 import co.turtlegames.engine.engine.kit.Kit;
 import co.turtlegames.engine.engine.state.GameState;
+import co.turtlegames.engine.util.GameConstant;
 import co.turtlegames.engine.util.TickRate;
 import co.turtlegames.engine.util.UtilEntity;
 import org.bukkit.Bukkit;
@@ -80,14 +82,25 @@ public abstract class AbstractGame implements Listener {
 
     private void endGame(IEndMessageProvider messageProvider) {
 
+        _gameManager.stopGameTimer();
+
         HandlerList.unregisterAll(this);
+        for(Kit k : _kits)
+            HandlerList.unregisterAll(k);
+
+        double gameDurationMinutes = (_gameManager.getGameDuration() * 1.0d)/(1000 * 60);
+        UtilDev.alert(UtilDev.AlertLevel.LOG, "Game duration: " + gameDurationMinutes + " minutes");
+        UtilDev.alert(UtilDev.AlertLevel.LOG, _gameManager.getGameDuration() + "ms");
+
+        long participationXp = (long) Math.ceil(gameDurationMinutes * GameConstant.PART_XP_PER_MINUTE);
+        double participationCoins = gameDurationMinutes * GameConstant.PART_COINS_PER_MINUTE;
 
         for(Player ply : Bukkit.getOnlinePlayers()) {
 
             GamePlayer gamePlayer = _gameManager.getGamePlayer(ply, false);
 
             gamePlayer.getDeferredProgress()
-                    .addAward(new DeferredAward("Participation", 100, 25));
+                    .addAward(new DeferredAward("Participation", participationXp, participationCoins));
 
             ply.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
             ply.sendMessage("");
@@ -162,7 +175,12 @@ public abstract class AbstractGame implements Listener {
     }
 
     public void registerEvents() {
+
         Bukkit.getPluginManager().registerEvents(this, this.getGameManager().getPlugin());
+
+        for(Kit k : _kits)
+            Bukkit.getPluginManager().registerEvents(k, this.getGameManager().getPlugin());
+
     }
 
     public void handlePreGameStart() {}

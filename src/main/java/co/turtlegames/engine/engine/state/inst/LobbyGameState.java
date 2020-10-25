@@ -19,6 +19,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 
 public class LobbyGameState extends AbstractStateProvider {
 
@@ -111,7 +112,8 @@ public class LobbyGameState extends AbstractStateProvider {
             coinLine = UtilString.formatInteger(cD.getBalance(CurrencyType.COINS)) + " coins";
 
         scoreboard.setLine(5, ChatColor.WHITE + "Balance: " + ChatColor.YELLOW + coinLine);
-        scoreboard.setLine(6, ChatColor.WHITE + "Rank: " + ChatColor.YELLOW + profile.getRank().getName());
+        //scoreboard.setLine(6, ChatColor.WHITE + "Rank: " + profile.getRank().getColor() + profile.getRank().getName());
+        scoreboard.setLine(6, ChatColor.WHITE + "" + profile.hashCode());
 
         scoreboard.setLine(7, "");
 
@@ -120,7 +122,7 @@ public class LobbyGameState extends AbstractStateProvider {
         scoreboard.setLine(9, "");
 
         scoreboard.setLine(10, ChatColor.WHITE + "Level: " + ChatColor.AQUA + UtilXp.getLevel(profile.getXp()));
-        scoreboard.setLine(11,  UtilXp.drawXpBar(profile.getXp(), 20));
+        scoreboard.setLine(11,  UtilXp.drawXpBar(profile.getXp(), 14));
 
         scoreboard.setLine(12, "");
         scoreboard.setLine(13, ChatColor.GREEN + ChatColor.BOLD.toString() + this.getStatusMessage());
@@ -140,6 +142,11 @@ public class LobbyGameState extends AbstractStateProvider {
 
     public void setTimerTicks(int i) {
         _tickTimer = i;
+    }
+
+    @EventHandler
+    public void onWeatherChange(WeatherChangeEvent event) {
+        event.setCancelled(true);
     }
 
 }

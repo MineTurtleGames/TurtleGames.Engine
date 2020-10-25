@@ -17,7 +17,7 @@ import java.util.Stack;
 
 public class DTCGenerator {
 
-    private static final int TICKS_PER_BLOCK = 5;
+    private int _ticksPerBlock = 20;
 
     private DefendTheCoreGame _dtcInstance;
 
@@ -37,7 +37,7 @@ public class DTCGenerator {
         _team = team;
 
         _status = region.getSize();
-        _ticks = TICKS_PER_BLOCK;
+        _ticks = _ticksPerBlock;
 
         _blockStack = new Stack<>();
 
@@ -73,7 +73,7 @@ public class DTCGenerator {
         if(_ticks > 0)
             return;
 
-        _ticks = TICKS_PER_BLOCK;
+        _ticks = _ticksPerBlock;
 
         if(_status <= 0) {
 

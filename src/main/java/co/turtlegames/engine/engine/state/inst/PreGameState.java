@@ -36,6 +36,8 @@ public class PreGameState extends AbstractStateProvider {
         _gameManager.getGameInstance().registerEvents();
         _gameManager.getGameInstance().handlePreGameStart();
 
+        _gameManager.startGameTimer();
+
     }
 
     @Override

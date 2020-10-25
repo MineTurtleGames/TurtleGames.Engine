@@ -13,6 +13,7 @@ import co.turtlegames.engine.engine.game.GameTeam;
 import co.turtlegames.engine.engine.game.player.PlayerState;
 import co.turtlegames.engine.engine.map.MapManager;
 import co.turtlegames.engine.type.dtc.kit.ArcherKit;
+import co.turtlegames.engine.type.dtc.kit.BomberKit;
 import co.turtlegames.engine.type.dtc.kit.FighterKit;
 import co.turtlegames.engine.util.TickRate;
 import org.bukkit.Bukkit;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -63,6 +65,7 @@ public class DefendTheCoreGame extends AbstractGame {
 
         _kits.add(new FighterKit());
         _kits.add(new ArcherKit());
+        _kits.add(new BomberKit(this));
 
     }
 
@@ -146,16 +149,8 @@ public class DefendTheCoreGame extends AbstractGame {
     }
 
     @EventHandler
-    public void onExplosion(BlockExplodeEvent event) {
-
-        Block blk = event.getBlock();
-
-        if(blk.getType() == Material.WOOD
-                || blk.getType() == Material.STONE)
-            return;
-
-        event.setCancelled(true);
-
+    public void onExplosion(EntityExplodeEvent event) {
+        event.blockList().removeIf((block) -> block.getType() != Material.WOOD && block.getType() != Material.STONE);
     }
 
     public boolean isShielded(GameTeam team) {
@@ -235,7 +230,7 @@ public class DefendTheCoreGame extends AbstractGame {
             if(targetCore.contains(block)) {
 
                 targetCore.attemptDamage();
-                return;
+                continue;
 
             }
 
@@ -251,7 +246,6 @@ public class DefendTheCoreGame extends AbstractGame {
                     continue;
 
                 gen.attemptDamage();
-                return;
 
             }
 
