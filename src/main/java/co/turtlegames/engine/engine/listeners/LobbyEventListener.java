@@ -10,10 +10,12 @@ import co.turtlegames.engine.engine.state.GameState;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -145,6 +147,20 @@ public class LobbyEventListener implements Listener {
             return;
 
         event.setCancelled(true);
+
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent ev) {
+
+        if(ev.getCause() != EntityDamageEvent.DamageCause.VOID)
+            return;
+
+        Entity ent = ev.getEntity();
+        ent.teleport(GameManager.LOBBY_POS.toLocation(ent.getWorld()));
+
+        if(ent instanceof Player)
+            ((Player) ent).playSound(ent.getLocation(), Sound.BAT_TAKEOFF, 1f, 1f);
 
     }
 

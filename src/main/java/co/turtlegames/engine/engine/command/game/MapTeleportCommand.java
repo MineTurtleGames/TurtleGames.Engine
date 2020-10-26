@@ -1,4 +1,4 @@
-package co.turtlegames.engine.engine.command;
+package co.turtlegames.engine.engine.command.game;
 
 import co.turtlegames.core.command.CommandBase;
 import co.turtlegames.core.command.sub.SubCommandBase;

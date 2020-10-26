@@ -1,7 +1,7 @@
 package co.turtlegames.engine.engine.map;
 
 import co.turtlegames.core.TurtleModule;
-import co.turtlegames.core.file.minio.FileClusterManager;
+import co.turtlegames.core.file.FileClusterManager;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.core.world.tworld.io.TurtleInputStream;
 import co.turtlegames.core.world.tworld.loader.TurtleWorldLoader;
@@ -169,6 +169,10 @@ public class MapManager extends TurtleModule {
 
         return _lobbyWorld;
 
+    }
+
+    public void unregisterLobbyWorld() {
+        _lobbyWorld = null;
     }
 
     public Location getLobbyTeleportPosition() {

@@ -1,6 +1,6 @@
 package co.turtlegames.engine.engine.map;
 
-import co.turtlegames.core.file.minio.FileClusterManager;
+import co.turtlegames.core.file.FileClusterManager;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.core.world.tworld.io.TurtleInputStream;
 import co.turtlegames.engine.engine.game.GameType;

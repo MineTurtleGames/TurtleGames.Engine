@@ -9,6 +9,8 @@ public class DamageToken {
     private EntityDamageEvent _event;
     private String _customCause;
 
+    private GamePlayer _responsible;
+
     public DamageToken(long damageTime, EntityDamageEvent event) {
         _damageTime = damageTime;
         _event = event;
@@ -34,6 +36,14 @@ public class DamageToken {
 
     public String getCustomCause() {
         return _customCause;
+    }
+
+    public void setResponsibility(GamePlayer responsible) {
+        _responsible = responsible;
+    }
+
+    public GamePlayer getResponsible() {
+        return _responsible;
     }
 
 }

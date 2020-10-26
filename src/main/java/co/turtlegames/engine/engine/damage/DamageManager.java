@@ -92,9 +92,12 @@ public class DamageManager {
                 damageCause = UtilGameString.vanity(token.getEvent().getCause());
             }
 
+            double damageHearts = token.getEvent().getDamage()/2;
+            String damageAmount = "" + (Math.ceil(damageHearts*10)/10);
+
             ply.sendMessage(ChatColor.DARK_GREEN + ChatColor.BOLD.toString() + "Damage Log: "
                     + ChatColor.GREEN + timeSinceDamage + " - " + damageCause + ": -"
-                    + ChatColor.RED + token.getEvent().getDamage()/2 + " ♡");
+                    + ChatColor.RED + damageAmount + " \u2764");
         }
         damageTokens.clear();
 

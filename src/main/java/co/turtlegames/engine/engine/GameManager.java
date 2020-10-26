@@ -9,7 +9,8 @@ import co.turtlegames.core.util.ItemBuilder;
 import co.turtlegames.core.util.UtilDev;
 import co.turtlegames.core.world.tworld.TurtleWorldFormat;
 import co.turtlegames.core.world.tworld.TurtleWorldMetaPoint;
-import co.turtlegames.engine.engine.command.GameCommand;
+import co.turtlegames.engine.engine.command.engine.EngineCommand;
+import co.turtlegames.engine.engine.command.game.GameCommand;
 import co.turtlegames.engine.engine.damage.DamageManager;
 import co.turtlegames.engine.engine.game.*;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
@@ -33,7 +34,6 @@ import com.google.common.collect.Multimap;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 
 public class GameManager extends TurtleModule {
 
-    public static final Vector LOBBY_POS = new Vector(-133.5, 90d, -135.5);;
+    public static final Vector LOBBY_POS = new Vector(-115.5, 98d, -107.5);;
 
     private GameState _currentState = GameState.INACTIVE;
     private GameType _gameType = null;
@@ -93,6 +93,8 @@ public class GameManager extends TurtleModule {
 
         this.registerCommand(new GameCommand(this));
         this.registerCommand(new KitCommand(this));
+
+        this.registerCommand(new EngineCommand(this));
 
         this.getModule(TurtleScoreboardManager.class)
                 .updateScoreboardView(new EngineScoreboardView(this));

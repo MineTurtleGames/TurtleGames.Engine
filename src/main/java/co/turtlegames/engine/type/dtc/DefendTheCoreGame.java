@@ -27,6 +27,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.Collection;
@@ -146,6 +147,11 @@ public class DefendTheCoreGame extends AbstractGame {
         event.setCancelled(true);
         ply.sendMessage(Chat.main("Game", "You can only break blocks placed by players"));
 
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        event.setCancelled(true); // Nice try achievement??
     }
 
     @EventHandler

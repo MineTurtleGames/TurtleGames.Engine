@@ -2,6 +2,7 @@ package co.turtlegames.engine.engine.damage.listener;
 
 import co.turtlegames.engine.engine.GameManager;
 import co.turtlegames.engine.engine.damage.DamageManager;
+import co.turtlegames.engine.engine.damage.DamageResponsibilityEvent;
 import co.turtlegames.engine.engine.damage.DamageToken;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.player.PlayerState;
@@ -51,8 +52,18 @@ public class GameDamageHandle implements Listener {
         }
 
         if (event.getCause() != EntityDamageEvent.DamageCause.CUSTOM) {
+
             DamageToken damageToken = new DamageToken(System.currentTimeMillis(), event);
+
+            DamageResponsibilityEvent responsibilityEvent = new DamageResponsibilityEvent(event);
+            Bukkit.getPluginManager().callEvent(responsibilityEvent);
+
+            if(responsibilityEvent.getResponsible() != null) {
+                damageToken.setResponsibility(responsibilityEvent.getResponsible());
+            }
+
             gamePlayer.registerDamageToken(damageToken);
+
         }
 
         if(ply.getHealth() - event.getFinalDamage() > 0)
