@@ -372,7 +372,34 @@ public class GameManager extends TurtleModule {
     }
 
     public void purgeGamePlayer(Player player) {
-        _gamePlayers.remove(player.getUniqueId());
+
+        GamePlayer gamePlayer = _gamePlayers.remove(player.getUniqueId());
+
+        if(gamePlayer == null)
+            return;
+
+        if(this.getState() != GameState.IN_GAME && this.getState() != GameState.PRE_GAME)
+            return;
+
+        GameOptions options = _gameInstance.getGameOptions();
+
+        if(_gameInstance.getTeams().size() != 2)
+            return;
+
+        GameTeam team = gamePlayer.getTeam();
+
+        for(GamePlayer gPly  : _gamePlayers.values()) {
+            if(gPly.getTeam() == team && gPly.getState() != PlayerState.SPECTATOR)
+                return;
+        }
+
+        GameTeam winningTeam = _gameInstance.getTeams().stream()
+                                    .filter((a) -> a != team)
+                                        .findFirst()
+                                    .orElse(null);
+
+        _gameInstance.endGameWithTeam(winningTeam);
+
     }
 
     public DamageManager getDamageManager() {

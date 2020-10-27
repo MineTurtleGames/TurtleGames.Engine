@@ -4,6 +4,8 @@ import co.turtlegames.engine.engine.prevention.PreventionSet;
 
 public class GameOptions extends PreventionSet {
 
+    private boolean _teamGame = true;
+
     private int _minPlayers = 2;
     private int _maxPlayers = 16;
 
@@ -47,6 +49,14 @@ public class GameOptions extends PreventionSet {
 
     public long getDeathTime() {
         return _deathTime;
+    }
+
+    public boolean isTeamGame() {
+        return _teamGame;
+    }
+
+    public void setTeamGame(boolean teamGame) {
+        _teamGame = teamGame;
     }
 
 }
