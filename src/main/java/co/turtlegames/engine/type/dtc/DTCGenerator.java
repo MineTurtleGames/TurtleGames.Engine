@@ -2,6 +2,7 @@ package co.turtlegames.engine.type.dtc;
 
 import co.turtlegames.core.common.Chat;
 import co.turtlegames.core.util.TRegion;
+import co.turtlegames.core.util.UtilDev;
 import co.turtlegames.engine.engine.game.GameTeam;
 import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.map.MapManager;
@@ -49,6 +50,8 @@ public class DTCGenerator {
     }
 
     private void generate() {
+
+        UtilDev.alert(UtilDev.AlertLevel.LOG, "Generating blocks for " + _team.getName() + " generator/core (" + _blockStack.size() + ")");
 
         _blockStack.forEach((b) -> {
 

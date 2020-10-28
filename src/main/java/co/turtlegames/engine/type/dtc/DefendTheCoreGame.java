@@ -12,9 +12,7 @@ import co.turtlegames.engine.engine.game.player.GamePlayer;
 import co.turtlegames.engine.engine.game.GameTeam;
 import co.turtlegames.engine.engine.game.player.PlayerState;
 import co.turtlegames.engine.engine.map.MapManager;
-import co.turtlegames.engine.type.dtc.kit.ArcherKit;
-import co.turtlegames.engine.type.dtc.kit.BomberKit;
-import co.turtlegames.engine.type.dtc.kit.FighterKit;
+import co.turtlegames.engine.type.dtc.kit.*;
 import co.turtlegames.engine.util.TickRate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -66,7 +64,10 @@ public class DefendTheCoreGame extends AbstractGame {
 
         _kits.add(new FighterKit());
         _kits.add(new ArcherKit());
+
         _kits.add(new BomberKit(this));
+        _kits.add(new BeserkerKit(this));
+        _kits.add(new WarperKit(this));
 
     }
 
@@ -157,6 +158,11 @@ public class DefendTheCoreGame extends AbstractGame {
     @EventHandler
     public void onExplosion(EntityExplodeEvent event) {
         event.blockList().removeIf((block) -> block.getType() != Material.WOOD && block.getType() != Material.STONE);
+    }
+
+    @Override
+    public void handleGameStart() {
+        _ticksRemaining = 15 * 20 * 60;
     }
 
     public boolean isShielded(GameTeam team) {

@@ -29,6 +29,8 @@ public abstract class Kit implements Listener {
 
     }
 
+    public void resetStates() {}
+
     public void apply(GamePlayer gamePlayer) {
 
         gamePlayer.getPlayer().getInventory().clear();

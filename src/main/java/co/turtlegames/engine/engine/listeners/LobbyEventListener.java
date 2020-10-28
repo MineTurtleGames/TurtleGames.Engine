@@ -153,6 +153,10 @@ public class LobbyEventListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent ev) {
 
+        if(_gameManager.getState() != GameState.LOBBY
+                && _gameManager.getState() != GameState.INACTIVE)
+            return;
+
         if(ev.getCause() != EntityDamageEvent.DamageCause.VOID)
             return;
 

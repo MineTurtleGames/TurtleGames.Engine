@@ -85,8 +85,12 @@ public abstract class AbstractGame implements Listener {
         _gameManager.stopGameTimer();
 
         HandlerList.unregisterAll(this);
-        for(Kit k : _kits)
+        for(Kit k : _kits) {
+
+            k.resetStates();
             HandlerList.unregisterAll(k);
+
+        }
 
         double gameDurationMinutes = (_gameManager.getGameDuration() * 1.0d)/(1000 * 60);
         UtilDev.alert(UtilDev.AlertLevel.LOG, "Game duration: " + gameDurationMinutes + " minutes");
